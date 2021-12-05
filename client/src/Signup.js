@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import React, { useState } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
 import {
   Grid,
   Box,
@@ -9,8 +9,8 @@ import {
   FormControl,
   TextField,
   FormHelperText,
-} from "@material-ui/core";
-import { register } from "./store/utils/thunkCreators";
+} from '@material-ui/core';
+import { register } from './store/utils/thunkCreators';
 
 const Login = (props) => {
   const history = useHistory();
@@ -25,7 +25,7 @@ const Login = (props) => {
     const confirmPassword = event.target.confirmPassword.value;
 
     if (password !== confirmPassword) {
-      setFormErrorMessage({ confirmPassword: "Passwords must match" });
+      setFormErrorMessage({ confirmPassword: 'Passwords must match' });
       return;
     }
 
@@ -37,11 +37,11 @@ const Login = (props) => {
   }
 
   return (
-    <Grid container justify="center">
+    <Grid container justifyContent="center">
       <Box>
         <Grid container item>
           <Typography>Need to log in?</Typography>
-          <Button onClick={() => history.push("/login")}>Login</Button>
+          <Button onClick={() => history.push('/login')}>Login</Button>
         </Grid>
         <form onSubmit={handleRegister}>
           <Grid>
