@@ -8,10 +8,27 @@ import {
   Button,
   FormControl,
   TextField,
+  CssBaseline,
+  Paper,
 } from "@material-ui/core";
 import { login } from "./store/utils/thunkCreators";
+import { makeStyles } from "@material-ui/core/styles";
+import BgImg from './assets/bg-img.png'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100vh",
+    width: "100vw",
+    display: "flex"
+  }, 
+  loginForm: {
+    flex: 8 
+ 
+  }
+}));
 
 const Login = (props) => {
+  const classes = useStyles();
   const history = useHistory();
   const { user, login } = props;
 
@@ -28,8 +45,12 @@ const Login = (props) => {
   }
 
   return (
-    <Grid container justify="center">
+    <Grid container justify="center" className={classes.root} component="main">
+      <CssBaseline />
       <Box>
+        <img src={BgImg} alt="background" height="100%"/>
+      </Box>
+      <Box className={classes.loginForm}>
         <Grid container item>
           <Typography>Need to register?</Typography>
           <Button onClick={() => history.push("/register")}>Register</Button>
