@@ -8,6 +8,7 @@ import {
   Button,
   FormControl,
   TextField,
+  Link
 } from "@material-ui/core";
 import { login } from "./store/utils/thunkCreators";
 import { makeStyles } from "@material-ui/core/styles";
@@ -21,36 +22,30 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     display: "flex",
     overflow: "hidden"
-  }, 
+  },
   banner: {
     height: "100%",
-    backgroundImage: `linear-gradient(to bottom, rgba(58, 141, 255, 0.7), rgba(58, 141, 255, 0.9)), url(${BgImg})`,
+    backgroundImage: `linear-gradient(to bottom, rgb(76, 151, 254, 0.6), rgba(58, 141, 255, 0.8)), url(${BgImg})`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    backgroundPosition: "center",
     textAlign: "center",
     [theme.breakpoints.down('xs')]: {
       display: 'none'
     }
   },
-  bannerText: {
-    color: "#fff",
-    lineHeight: 1.5
-  },
-
   rightForm: {
     height: "100%",
-    paddingLeft:"10%" ,
-    paddingRight: "10%",
+    padding:"30px 10%",
+    minWidth: 150
   },
+  loginInput: {
+    width: 350,
+    [theme.breakpoints.down('xs')]: {
+      width: 150
+    }
+  }
 
-  formWelcome: {
-    fontSize: 30,
-    fontWeight: 600,
-  },
-
-  rightFormBody: {
-    marginTop: 50
-  },
 }));
 
 const Login = (props) => {
@@ -72,43 +67,47 @@ const Login = (props) => {
 
   return (
     <Grid container className={classes.root} >
-      <Grid item className={classes.banner} sm={5} xl={4}>
+      <Grid container item className={classes.banner} sm={5} xl={4}>
         <Box style={{marginTop: 200}}>
-          <img src={DialogBubble} style={{marginBottom: 30}}/>
-          <Typography variant="h4" className={classes.bannerText}>Converse with anyone with any language</Typography>
+          <img src={DialogBubble} style={{marginBottom: 30}} alt="chatBubble"/>
+          <Typography variant="h4" style={{lineHeight: 1.5, color: "#fff"}}>Converse with anyone with any language</Typography>
         </Box>
       </Grid>
       <Grid item container className={classes.rightForm} sm={7} xl={8}>
-          <Grid container item className={classes.rightFormHeader} justifyContent="flex-end" alignItems="center">
-            <Typography style={{ marginRight: "5%"}}>Don't have an account?</Typography>
-            <Button onClick={() => history.push("/register")} variant="text" color="primary" >Create account</Button>
-          </Grid>
-        <form onSubmit={handleLogin} className={classes.rightFormBody}>
-          <Grid>
-            <Typography variant="h3" className={classes.formWelcome} style={{ marginBottom: 50 }}>Welcom back!</Typography>
-            <Grid >
+        <Grid container item justifyContent="flex-end" alignItems="center" style={{height: 10}}>
+          <Typography style={{ marginRight: 30}} color="secondary">Don't have an account?</Typography>
+          <Button onClick={() => history.push("/register")} variant="text" color="primary" style={{padding: "15px 30px"}}>Create account</Button>
+        </Grid>
+        <form onSubmit={handleLogin} style={{ marginTop: 50 }}>
+            <Typography variant="h3" style={{ marginBottom: 50, fontSize: 30, fontWeight: 600 }}>Welcom back!</Typography>
+            <Grid container direction="column" justifyContent="center" alignItems="flex-start" layout="row" spacing={6}>
+            <Grid item >
               <FormControl margin="normal" required >
                 <TextField
                   aria-label="username"
                   label="Username"
                   name="username"
                   type="text"
-                  style={{width: 900}}
+                  className={classes.loginInput}
                 />
               </FormControl>
             </Grid>
-            <FormControl margin="normal" required>
-              <TextField
-                fullWidth
-                label="password"
-                aria-label="password"
-                type="password"
-                name="password"
-                style={{width: 900, marginTop: 80}}
-              />
-            </FormControl>
-            <Grid container justifyContent="center" alignItems="center">
-              <Button type="submit" variant="contained" size="large" color="primary" style={{ marginTop: 100, width: 200, height: 70}}>
+            <Grid item style={{position: "relative"}}>
+              <FormControl margin="normal" required>
+                <TextField
+                  label="password"
+                  aria-label="password"
+                  type="password"
+                  name="password"
+                  className={classes.loginInput}
+                />
+              </FormControl>
+              <Link href="#" underline="none" style={{position: "absolute", bottom: 40, right: 20, fontSize: 14}}>
+                {"Forgot?"}
+              </Link>
+            </Grid>
+            <Grid container justifyContent="center">
+              <Button type="submit" variant="contained" color="primary" style={{ marginTop: 60, padding: "16px 55px"}}>
                 Login
               </Button>
             </Grid>
