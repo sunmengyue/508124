@@ -79,12 +79,8 @@ const Input = (props) => {
       formData.append("file", img);
       formData.append("upload_preset", "lsu8bcuh");
       setLoading(true);
-      const res = await fetch(process.env.REACT_APP_CLOUDINARY_URL, {
+      const res = await fetch("https://api.cloudinary.com/v1_1/bardrabbit709/image/upload", {
         method: "POST",
-        headers : { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-         },
         body: formData
       });
       const file = await res.json();
