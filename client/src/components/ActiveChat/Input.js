@@ -3,7 +3,6 @@ import { FormControl, FilledInput, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { postMessage } from "../../store/utils/thunkCreators";
-import { Image } from 'cloudinary-react';
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 
 const useStyles = makeStyles(() => ({
@@ -77,9 +76,9 @@ const Input = (props) => {
     for (let i = 0; i < imgs.length; i++) {
       let img = imgs[i];
       formData.append("file", img);
-      formData.append("upload_preset", "lsu8bcuh");
+      formData.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET_NAME);
       setLoading(true);
-      const res = await fetch("https://api.cloudinary.com/v1_1/bardrabbit709/image/upload", {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload`, {
         method: "POST",
         body: formData
       });
