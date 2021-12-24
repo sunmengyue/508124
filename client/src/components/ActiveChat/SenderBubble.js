@@ -34,10 +34,11 @@ const SenderBubble = (props) => {
   return (
     <Box className={classes.root}>
       <Typography className={classes.date}>{time}</Typography>
-      <ImageAttachments attachments={attachments}/>
-      <Box className={classes.bubble}>
-        <Typography className={classes.text}>{text}</Typography>
-      </Box>
+      {attachments && <ImageAttachments attachments={attachments} fromOtherUser={false}/>}
+      {text &&    
+        <Box className={classes.bubble}>
+          <Typography className={classes.text}>{text}</Typography>
+        </Box>}
     </Box>
   );
 };
