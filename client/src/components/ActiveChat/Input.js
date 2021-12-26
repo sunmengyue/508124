@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FormControl, FilledInput, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { postMessage } from "../../store/utils/thunkCreators";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     justifySelf: "flex-end",
     marginTop: 15
@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
   attachContainer: {
     position: "absolute",
     right: 50,
-    transform: "translate(0, 30%)",
+    transform: "translate(0, 30%)"
   },
   attachBtn: {
     "&:hover": {
@@ -32,6 +32,9 @@ const useStyles = makeStyles(() => ({
       color: "#3A8DFF",
     },
     transition: "0.1s ease-in-out"
+  },
+  customText: {
+    color: theme.palette.secondary.main
   }
 }));
 
@@ -41,6 +44,7 @@ const Input = (props) => {
   const { postMessage, otherUser, conversationId, user } = props;
   const [imgs, setImgs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const customTextRef = useRef(null);
 
   const handleChange = (event) => {
     setText(event.target.value);
@@ -48,6 +52,15 @@ const Input = (props) => {
 
   const handleImgChange = (event) => {
     setImgs(event.target.files);
+    if (event.target.files.length) {
+      if (event.target.files.length === 1) {
+        customTextRef.current.textContent = event.target.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
+      } else {
+        customTextRef.current.textContent = `${event.target.files.length} files attached`;
+      }
+    } else {
+      customTextRef.current.innerHTML = "No file chosen yet";
+    }
   }
 
   const handleSubmit = async (event) => {
@@ -58,6 +71,7 @@ const Input = (props) => {
     // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
     let imgUrls= null;
     if (event.target.file.files.length) {
+      customTextRef.current.innerHTML = "Sending images..."
       imgUrls = await uploadImage(event);
     }
     const reqBody = {
@@ -70,6 +84,8 @@ const Input = (props) => {
     await postMessage(reqBody);
     setText("");
     setImgs([]);
+    event.target.file.value = "";
+    customTextRef.current.innerHTML = "No file chosen yet";
   };
 
   const uploadImage = async(event) => {
@@ -80,13 +96,11 @@ const Input = (props) => {
       let img = imgs[i];
       formData.append("file", img);
       formData.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET_NAME);
-      setLoading(true);
       const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload`, {
         method: "POST",
         body: formData
       });
       const file = await res.json();
-      setLoading(false);
       imgUrls.push(file.url);
     }
     return imgUrls;
@@ -106,17 +120,18 @@ const Input = (props) => {
       </FormControl>
       <input
         accept="image/*"
-        hidden
         id="icon-button-file"
         name="file"
         type="file"
         multiple
         onChange={handleImgChange}
+        hidden
       />
       <label htmlFor="icon-button-file" className={classes.attachContainer}>
-        <IconButton color="secondary" aria-label="upload picture" component="span" className={classes.attachBtn}>
+        <span className={classes.customText} ref={customTextRef}>No file chosen yet</span>
+        <IconButton color="secondary" aria-label="upload picture" component="span" className={classes.attachBtn} >
           <AttachFileIcon className={classes.attachIcon}/>
-        </IconButton>
+        </IconButton> 
       </label>
     </form>
   );
