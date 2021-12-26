@@ -43,7 +43,6 @@ const Input = (props) => {
   const [text, setText] = useState("");
   const { postMessage, otherUser, conversationId, user } = props;
   const [imgs, setImgs] = useState([]);
-  const [loading, setLoading] = useState(false);
   const customTextRef = useRef(null);
 
   const handleChange = (event) => {
