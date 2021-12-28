@@ -5,8 +5,6 @@ import { connect } from "react-redux";
 import Banner from "./components/LoginAndSignup/Banner";
 import {
   Grid,
-  Box,
-  Typography,
   FormControl,
   TextField,
   FormHelperText,
@@ -110,7 +108,7 @@ const Login = (props) => {
                   </FormHelperText>
                 </FormControl>
               </Grid>
-              <ActionButton action="Login"/>
+              <ActionButton action="Create"/>
             </FormBodyContainer>
           </form>
         </FormContainer>

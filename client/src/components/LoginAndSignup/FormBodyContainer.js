@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
 const FormBodyContainer = (props) => {
   const classes = useStyles();
   return (
-    <Grid container direction="column" alignItems="flex-start" layout="row" spacing={9} className={classes.formBody}>
+    <Grid container direction="column" alignItems="flex-start" layout="row" spacing={3} className={classes.formBody}>
       {props.children}
     </Grid>
   )

@@ -5,11 +5,9 @@ import { connect } from "react-redux";
 import Banner from "./components/LoginAndSignup/Banner";
 import {
   Grid,
-  Box,
   Typography,
   FormControl,
   TextField,
-  FormHelperText,
 } from "@material-ui/core";
 import { login } from "./store/utils/thunkCreators";
 import ActionButton from "./components/LoginAndSignup/ActionButton";
@@ -81,7 +79,7 @@ const Login = (props) => {
                 </FormControl>
                 <Typography className={classes.passwordReset}>Forgot?</Typography>
               </Grid>
-              <ActionButton action="Create" />
+              <ActionButton action="Login" />
             </FormBodyContainer>
           </form>
         </FormContainer>
