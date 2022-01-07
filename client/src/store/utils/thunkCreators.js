@@ -7,6 +7,7 @@ import {
   setSearchedUsers,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
+import { setImageUrls } from '../imageUrls';
 
 axios.interceptors.request.use(async function (config) {
   const token = await localStorage.getItem("messenger-token");
@@ -98,6 +99,30 @@ const sendMessage = (data, body) => {
     sender: data.sender,
   });
 };
+
+export const uploadImages = (event) => async(dispatch) => {
+  const imgs = event.target.file.files;
+  const formData = new FormData();
+  const imgUrlPromises = [];
+  for (let i = 0; i < imgs.length; i++) {
+    let img = imgs[i];
+    formData.append("file", img);
+    formData.append("upload_preset", "lsu8bcuh");
+    imgUrlPromises.push( 
+       fetch(`https://api.cloudinary.com/v1_1/bardrabbit709/image/upload`, {
+          method: "POST",
+          body: formData
+    }));
+  }
+  try {
+    const results = await Promise.all(imgUrlPromises);
+    const data = await Promise.all(results.map(res => res.json()));
+    const urls = data.map(el => el.url);
+    dispatch(setImageUrls(urls));
+  } catch(error) {
+    console.error(error);
+  }
+}
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
