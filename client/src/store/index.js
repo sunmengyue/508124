@@ -5,7 +5,7 @@ import thunkMiddleware from "redux-thunk";
 import user from "./user";
 import conversations from "./conversations";
 import activeConversation from "./activeConversation";
-import imageUrls from './imageUrls';
+import imageSendingStatus from "./isSendingImages";
 
 const CLEAR_ON_LOGOUT = "CLEAR_ON_LOGOUT";
 
@@ -19,7 +19,7 @@ const appReducer = combineReducers({
   user,
   conversations,
   activeConversation,
-  imageUrls
+  imageSendingStatus
 });
 const rootReducer = (state, action) => {
   if (action.type === CLEAR_ON_LOGOUT) {
@@ -29,4 +29,7 @@ const rootReducer = (state, action) => {
   return appReducer(state, action);
 };
 
-export default createStore(rootReducer, applyMiddleware(thunkMiddleware, loggerMiddleware));
+export default createStore(
+  rootReducer,
+  applyMiddleware(thunkMiddleware, loggerMiddleware)
+);
