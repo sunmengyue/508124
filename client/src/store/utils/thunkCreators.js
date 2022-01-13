@@ -99,6 +99,13 @@ const sendMessage = (data, body) => {
   });
 };
 
+export const sendingMessage = () => async(dispatch) => {
+  socket.emit("sending", true);
+  setTimeout(() => {
+    socket.emit("sending", false);
+  }, 3000);
+};
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async(dispatch) => {
@@ -110,7 +117,7 @@ export const postMessage = (body) => async(dispatch) => {
     } else {
       dispatch(setNewMessage(data.message));
     }
-
+    
     sendMessage(data, body);
   } catch (error) {
     console.error(error);
