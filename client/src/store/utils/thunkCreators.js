@@ -107,12 +107,18 @@ const uploadImages = async (event) => {
   for (let i = 0; i < imgs.length; i++) {
     let img = imgs[i];
     formData.append("file", img);
-    formData.append("upload_preset", "lsu8bcuh");
+    formData.append(
+      "upload_preset",
+      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET_NAME
+    );
     imgUrlPromises.push(
-      fetch(`https://api.cloudinary.com/v1_1/bardrabbit709/image/upload`, {
-        method: "POST",
-        body: formData
-      })
+      fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData
+        }
+      )
     );
   }
   const results = await Promise.all(imgUrlPromises);
