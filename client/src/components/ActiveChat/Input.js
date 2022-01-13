@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { FormControl, FilledInput, IconButton } from "@material-ui/core";
+import {
+  FormControl,
+  FilledInput,
+  IconButton,
+  InputLabel,
+  InputBase,
+  Typography
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { postMessage } from "../../store/utils/thunkCreators";
@@ -20,7 +27,12 @@ const useStyles = makeStyles((theme) => ({
   attachContainer: {
     position: "absolute",
     right: 50,
-    transform: "translate(0, 30%)"
+    transform: "translate(0, -230%)",
+    display: "flex",
+    alignItems: "center"
+  },
+  attachField: {
+    opacity: 0
   },
   attachBtn: {
     "&:hover": {
@@ -29,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   attachIcon: {
     "&:hover": {
-      color: "#3A8DFF",
+      color: "#3A8DFF"
     },
     transition: "0.1s ease-in-out"
   },
@@ -41,7 +53,8 @@ const useStyles = makeStyles((theme) => ({
 const Input = (props) => {
   const classes = useStyles();
   const [text, setText] = useState("");
-  const { postMessage, otherUser, conversationId, user } = props;
+  const { postMessage, otherUser, conversationId, user, isSendingImages } =
+    props;
   const [imgs, setImgs] = useState([]);
   const customTextRef = useRef(null);
 
@@ -53,57 +66,34 @@ const Input = (props) => {
     setImgs(event.target.files);
     if (event.target.files.length) {
       if (event.target.files.length === 1) {
-        customTextRef.current.textContent = event.target.value.match(/[\/\\]([\w\d\s\.\-\(\)]+)$/)[1];
+        customTextRef.current.textContent = event.target.value.match(
+          /[\/\\]([\w\d\s\.\-\(\)]+)$/
+        )[1];
       } else {
         customTextRef.current.textContent = `${event.target.files.length} files attached`;
       }
     } else {
       customTextRef.current.innerHTML = "No file chosen yet";
     }
-  }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if(!event.target.text.value && !event.target.file.files.length) {
+    if (!event.target.text.value && !event.target.file.files.length) {
       return;
-    };
-    // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
-    let imgUrls= null;
-    if (event.target.file.files.length) {
-      customTextRef.current.innerHTML = "Sending images..."
-      imgUrls = await uploadImage(event);
     }
+    // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
     const reqBody = {
       text: event.target.text.value,
       recipientId: otherUser.id,
       conversationId,
-      sender: conversationId ? null : user,
-      attachments: imgUrls
+      sender: conversationId ? null : user
     };
-    await postMessage(reqBody);
+    await postMessage(event, reqBody);
     setText("");
     setImgs([]);
     event.target.file.value = "";
-    customTextRef.current.innerHTML = "No file chosen yet";
   };
-
-  const uploadImage = async(event) => {
-    setImgs(event.target.file.files)
-    const formData = new FormData();
-    const imgUrls = [];
-    for (let i = 0; i < imgs.length; i++) {
-      let img = imgs[i];
-      formData.append("file", img);
-      formData.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET_NAME);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload`, {
-        method: "POST",
-        body: formData
-      });
-      const file = await res.json();
-      imgUrls.push(file.url);
-    }
-    return imgUrls;
-  }
 
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
@@ -117,31 +107,46 @@ const Input = (props) => {
           onChange={handleChange}
         />
       </FormControl>
-      <input
-        accept="image/*"
+      <InputBase
         id="icon-button-file"
         name="file"
         type="file"
-        multiple
+        inputProps={{ multiple: true }}
         onChange={handleImgChange}
-        hidden
+        className={classes.attachField}
       />
-      <label htmlFor="icon-button-file" className={classes.attachContainer}>
-        <span className={classes.customText} ref={customTextRef}>No file chosen yet</span>
-        <IconButton color="secondary" aria-label="upload picture" component="span" className={classes.attachBtn} >
-          <AttachFileIcon className={classes.attachIcon}/>
-        </IconButton> 
-      </label>
+      <InputLabel
+        htmlFor="icon-button-file"
+        className={classes.attachContainer}
+      >
+        <Typography className={classes.customText} ref={customTextRef}>
+          {isSendingImages ? "Sending images..." : "No files attached yet"}
+        </Typography>
+        <IconButton
+          color="secondary"
+          aria-label="upload picture"
+          component="span"
+          className={classes.attachBtn}
+        >
+          <AttachFileIcon className={classes.attachIcon} />
+        </IconButton>
+      </InputLabel>
     </form>
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
   return {
-    postMessage: (message) => {
-      dispatch(postMessage(message));
-    },
+    isSendingImages: state.imageSendingStatus
   };
 };
 
-export default connect(null, mapDispatchToProps)(Input);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postMessage: (event, message) => {
+      dispatch(postMessage(event, message));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Input);

@@ -4,9 +4,10 @@ import {
   gotConversations,
   addConversation,
   setNewMessage,
-  setSearchedUsers,
+  setSearchedUsers
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
+import { sendingImgs } from "../isSendingImages";
 
 axios.interceptors.request.use(async function (config) {
   const token = await localStorage.getItem("messenger-token");
@@ -76,8 +77,8 @@ export const fetchConversations = () => async (dispatch) => {
       return {
         ...convo,
         messages: convo.messages.sort((message1, message2) =>
-          new Date(message1.createAt) < new Date(message2.createAt) ? 1 : -1,
-        ),
+          new Date(message1.createAt) < new Date(message2.createAt) ? 1 : -1
+        )
       };
     });
     dispatch(gotConversations(sortedData));
@@ -95,14 +96,47 @@ const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
-    sender: data.sender,
+    sender: data.sender
   });
+};
+
+const uploadImages = async (event) => {
+  const imgs = event.target.file.files;
+  const formData = new FormData();
+  const imgUrlPromises = [];
+  for (let i = 0; i < imgs.length; i++) {
+    let img = imgs[i];
+    formData.append("file", img);
+    formData.append(
+      "upload_preset",
+      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET_NAME
+    );
+    imgUrlPromises.push(
+      fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData
+        }
+      )
+    );
+  }
+  const results = await Promise.all(imgUrlPromises);
+  const data = await Promise.all(results.map((res) => res.json()));
+  const urls = data.map((el) => el.url);
+  return urls;
 };
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
-export const postMessage = (body) => async(dispatch) => {
+export const postMessage = (event, body) => async (dispatch) => {
   try {
+    if (event.target.file.files.length) {
+      dispatch(sendingImgs(true));
+      const imageUrls = await uploadImages(event);
+      dispatch(sendingImgs(false));
+      body.attachments = imageUrls;
+    }
     const data = await saveMessage(body);
 
     if (!body.conversationId) {
