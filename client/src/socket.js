@@ -5,6 +5,7 @@ import {
   removeOfflineUser,
   addOnlineUser,
 } from "./store/conversations";
+import { setIsSending } from "./store/sendingStatus";
 
 const socket = io(window.location.origin);
 
@@ -20,6 +21,9 @@ socket.on("connect", () => {
   });
   socket.on("new-message", (data) => {
     store.dispatch(setNewMessage(data.message, data.sender));
+  });
+  socket.on("sending", (sendingStatus) => {
+    store.dispatch(setIsSending(sendingStatus));
   });
 });
 

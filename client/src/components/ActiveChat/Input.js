@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { postMessage } from "../../store/utils/thunkCreators";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
+import { sendingMessage } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,13 +54,20 @@ const useStyles = makeStyles((theme) => ({
 const Input = (props) => {
   const classes = useStyles();
   const [text, setText] = useState("");
-  const { postMessage, otherUser, conversationId, user, isSendingImages } =
-    props;
+  const {
+    postMessage,
+    sendingMessage,
+    otherUser,
+    conversationId,
+    user,
+    isSendingImages
+  } = props;
   const [imgs, setImgs] = useState([]);
   const customTextRef = useRef(null);
 
   const handleChange = (event) => {
     setText(event.target.value);
+    sendingMessage();
   };
 
   const handleImgChange = (event) => {
@@ -145,6 +153,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     postMessage: (event, message) => {
       dispatch(postMessage(event, message));
+    },
+    sendingMessage: () => {
+      dispatch(sendingMessage());
     }
   };
 };

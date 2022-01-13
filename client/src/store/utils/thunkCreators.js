@@ -127,6 +127,13 @@ const uploadImages = async (event) => {
   return urls;
 };
 
+export const sendingMessage = () => async (dispatch) => {
+  socket.emit("sending", true);
+  setTimeout(() => {
+    socket.emit("sending", false);
+  }, 3000);
+};
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (event, body) => async (dispatch) => {

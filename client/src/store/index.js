@@ -6,6 +6,7 @@ import user from "./user";
 import conversations from "./conversations";
 import activeConversation from "./activeConversation";
 import imageSendingStatus from "./isSendingImages";
+import isSending from "./sendingStatus";
 
 const CLEAR_ON_LOGOUT = "CLEAR_ON_LOGOUT";
 
@@ -17,6 +18,7 @@ export const clearOnLogout = () => {
 
 const appReducer = combineReducers({
   user,
+  isSending,
   conversations,
   activeConversation,
   imageSendingStatus
