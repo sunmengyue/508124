@@ -1,13 +1,14 @@
-import { createStore, applyMiddleware, combineReducers } from "redux";
-import loggerMiddleware from "redux-logger";
-import thunkMiddleware from "redux-thunk";
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import loggerMiddleware from 'redux-logger';
+import thunkMiddleware from 'redux-thunk';
 
-import user from "./user";
-import conversations from "./conversations";
-import activeConversation from "./activeConversation";
-import imageSendingStatus from "./isSendingImages";
+import user from './user';
+import conversations from './conversations';
+import activeConversation from './activeConversation';
+import imageSendingStatus from './isSendingImages';
+import isSending from './sendingStatus';
 
-const CLEAR_ON_LOGOUT = "CLEAR_ON_LOGOUT";
+const CLEAR_ON_LOGOUT = 'CLEAR_ON_LOGOUT';
 
 export const clearOnLogout = () => {
   return {
@@ -17,6 +18,7 @@ export const clearOnLogout = () => {
 
 const appReducer = combineReducers({
   user,
+  isSending,
   conversations,
   activeConversation,
   imageSendingStatus

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
   FormControl,
   FilledInput,
@@ -6,44 +6,45 @@ import {
   InputLabel,
   InputBase,
   Typography
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
-import { postMessage } from "../../store/utils/thunkCreators";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { postMessage } from '../../store/utils/thunkCreators';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import { sendingMessage } from '../../store/utils/thunkCreators';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    justifySelf: "flex-end",
+    justifySelf: 'flex-end',
     marginTop: 15
   },
   input: {
     height: 70,
-    backgroundColor: "#F4F6FA",
+    backgroundColor: '#F4F6FA',
     borderRadius: 8,
     marginBottom: 20,
-    position: "relative"
+    position: 'relative'
   },
   attachContainer: {
-    position: "absolute",
+    position: 'absolute',
     right: 50,
-    transform: "translate(0, -230%)",
-    display: "flex",
-    alignItems: "center"
+    transform: 'translate(0, -230%)',
+    display: 'flex',
+    alignItems: 'center'
   },
   attachField: {
     opacity: 0
   },
   attachBtn: {
-    "&:hover": {
-      background: "none"
+    '&:hover': {
+      background: 'none'
     }
   },
   attachIcon: {
-    "&:hover": {
-      color: "#3A8DFF"
+    '&:hover': {
+      color: '#3A8DFF'
     },
-    transition: "0.1s ease-in-out"
+    transition: '0.1s ease-in-out'
   },
   customText: {
     color: theme.palette.secondary.main
@@ -52,14 +53,21 @@ const useStyles = makeStyles((theme) => ({
 
 const Input = (props) => {
   const classes = useStyles();
-  const [text, setText] = useState("");
-  const { postMessage, otherUser, conversationId, user, isSendingImages } =
-    props;
+  const [text, setText] = useState('');
+  const {
+    postMessage,
+    otherUser,
+    conversationId,
+    user,
+    isSendingImages,
+    sendingMessage
+  } = props;
   const [imgs, setImgs] = useState([]);
   const customTextRef = useRef(null);
 
   const handleChange = (event) => {
     setText(event.target.value);
+    sendingMessage();
   };
 
   const handleImgChange = (event) => {
@@ -73,7 +81,7 @@ const Input = (props) => {
         customTextRef.current.textContent = `${event.target.files.length} files attached`;
       }
     } else {
-      customTextRef.current.innerHTML = "No file chosen yet";
+      customTextRef.current.innerHTML = 'No file chosen yet';
     }
   };
 
@@ -90,9 +98,9 @@ const Input = (props) => {
       sender: conversationId ? null : user
     };
     await postMessage(event, reqBody);
-    setText("");
+    setText('');
     setImgs([]);
-    event.target.file.value = "";
+    event.target.file.value = '';
   };
 
   return (
@@ -101,31 +109,32 @@ const Input = (props) => {
         <FilledInput
           classes={{ root: classes.input }}
           disableUnderline
-          placeholder="Type something..."
+          placeholder='Type something...'
           value={text}
-          name="text"
+          name='text'
           onChange={handleChange}
+          required
         />
       </FormControl>
       <InputBase
-        id="icon-button-file"
-        name="file"
-        type="file"
+        id='icon-button-file'
+        name='file'
+        type='file'
         inputProps={{ multiple: true }}
         onChange={handleImgChange}
         className={classes.attachField}
       />
       <InputLabel
-        htmlFor="icon-button-file"
+        htmlFor='icon-button-file'
         className={classes.attachContainer}
       >
         <Typography className={classes.customText} ref={customTextRef}>
-          {isSendingImages ? "Sending images..." : "No files attached yet"}
+          {isSendingImages ? 'Sending images...' : 'No files attached yet'}
         </Typography>
         <IconButton
-          color="secondary"
-          aria-label="upload picture"
-          component="span"
+          color='secondary'
+          aria-label='upload picture'
+          component='span'
           className={classes.attachBtn}
         >
           <AttachFileIcon className={classes.attachIcon} />
@@ -143,8 +152,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postMessage: (event, message) => {
-      dispatch(postMessage(event, message));
+    postMessage: (message) => {
+      dispatch(postMessage(message));
+    },
+    sendingMessage: () => {
+      dispatch(sendingMessage());
     }
   };
 };
